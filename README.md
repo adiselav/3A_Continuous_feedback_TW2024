@@ -2,7 +2,7 @@
 
 ## Descriere Generală
 
-**Feedback Continuum** este o aplicație web care permite acordarea de feedback continuu pentru cursuri sau seminarii. Platforma este gândită pentru a încuraja interacțiunea în timp real între studenți și profesori, oferind posibilitatea de a colecta și analiza reacțiile participanților pe parcursul unei activități.
+**Feedback Continuous** este o aplicație web care permite acordarea de feedback continuu pentru cursuri sau seminarii. Platforma este gândită pentru a încuraja interacțiunea în timp real între studenți și profesori, oferind posibilitatea de a colecta și analiza reacțiile participanților pe parcursul unei activități.
 
 Aplicația utilizează o arhitectură modernă de tip **Single Page Application (SPA)** și este accesibilă de pe desktop, dispozitive mobile sau tablete. Sistemul este susținut de un back-end RESTful conectat la o bază de date relațională sau nerelațională, și un front-end construit cu **React.js**.
 
@@ -39,7 +39,7 @@ Aplicația utilizează o arhitectură modernă de tip **Single Page Application 
 - **Spring Boot** pentru dezvoltarea rapidă a aplicației RESTful.
 - **Spring Data JPA** pentru gestionarea operațiilor cu baza de date folosind un ORM.
 - **Hibernate** ca implementare ORM pentru maparea obiect-relatională.
-- **Bază de date relațională:** MySQL/PostgreSQL.
+- **Bază de date relațională:** SQLite.
 - **Spring Web** pentru crearea și expunerea endpoint-urilor REST.
 - **Tool-uri de testare:** Postman pentru testarea API-urilor.
 
