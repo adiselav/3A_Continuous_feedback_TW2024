@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
 const { connectDB, syncModels } = require('./models');
 const authRoutes = require('./routes/auth');
 const activityRoutes = require('./routes/activity')
@@ -9,7 +10,13 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range']
+}));
 app.use('/api/auth', authRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/feedback', feedbackRoutes);
@@ -23,7 +30,7 @@ const startServer = async () => {
         await connectDB();
         await syncModels();
 
-        const PORT = process.env.PORT || 5001;
+        const PORT = process.env.PORT || 3001;
         app.listen(PORT, () => {
             console.log(`Serverul rulează pe http://localhost:${PORT}`);
         });

@@ -1,0 +1,1 @@
+cd server && npm run start & cd frontend && npm start

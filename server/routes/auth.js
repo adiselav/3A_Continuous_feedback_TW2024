@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
         return res.status(400).json({ message: 'Toate câmpurile sunt obligatorii!' });
     }
 
-    const emailRegex = /^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/;
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     if (!emailRegex.test(email)) {
         return res.status(400).json({ message: 'Adresa de email este invalidă!' });
     }
