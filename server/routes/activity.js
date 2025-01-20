@@ -41,6 +41,16 @@ router.get('/activities', authenticateToken, authorizeRole('professor'), async (
     }
 });
 
+// GET /activities - Get all available activities (pentru studenți)
+router.get('/activities', authenticateToken, authorizeRole('student'), async (req, res) => {
+    try {
+        const activities = await Activity.findAll();
+        res.status(200).json(activities);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching activities', error });
+    }
+});
+
 // DELETE /activities/:id - Delete an activity (doar prof)
 router.delete('/activities/:id', authenticateToken, authorizeRole('professor'), async (req, res) => {
     try {

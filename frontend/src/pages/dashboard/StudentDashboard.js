@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../../utils/axios-config';
 
 const StudentDashboard = () => {
 const [activities, setActivities] = useState([]);

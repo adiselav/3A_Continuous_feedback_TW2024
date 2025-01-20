@@ -82,6 +82,11 @@ router.post('/login', async (req, res) => {
         res.status(200).json({
             message: 'Autentificare reușită!',
             token,
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role
+            }
         });
     } catch (error) {
         console.error('Error during login:', error.message);

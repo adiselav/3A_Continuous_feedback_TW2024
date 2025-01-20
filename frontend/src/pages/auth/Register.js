@@ -110,7 +110,7 @@ return (
         </form>
 
         <div className="text-center">
-        <Link to="auth/login" className="text-indigo-600 hover:text-indigo-500">
+        <Link to="/auth/login" className="text-indigo-600 hover:text-indigo-500">
             Ai deja cont? Conectează-te
         </Link>
         </div>
