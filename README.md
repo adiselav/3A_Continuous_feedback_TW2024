@@ -5,6 +5,8 @@
 - **Pasul 2** Se ruleaza din folderul principal scriptul de start: `./start.sh`
 - **Pasul 3** Pentru fisierele .env, contact @aandreis20 sau @adiselav
 
+---
+
 ## Descriere Generală
 
 **Feedback3A** este o aplicație web care permite acordarea de feedback continuu pentru cursuri sau seminarii. Platforma este gândită pentru a încuraja interacțiunea în timp real între studenți și profesori, oferind posibilitatea de a colecta și analiza reacțiile participanților pe parcursul unei activități.
