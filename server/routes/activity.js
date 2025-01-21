@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { Activity } = require('../models/Activity');
-const { User } = require('../models/User');
+const Activity = require('../models/Activity');
+const User = require('../models/User');
 const authenticateToken = require('../middleware/authenticateToken.js');
+
+// Apply authentication middleware to all routes
+router.use(authenticateToken);
 
 // Middleware for role authorization
 const authorizeRole = (role) => (req, res, next) => {
@@ -12,74 +15,82 @@ const authorizeRole = (role) => (req, res, next) => {
     next();
 };
 
-// POST /activities - Create a new activity (doar prof)
-router.post('/activities', authenticateToken, authorizeRole('professor'), async (req, res) => {
+// POST /professor - Create a new activity
+router.post('/professor', authorizeRole('professor'), async (req, res) => {
     try {
-        const { description, code, date, duration } = req.body;
+        const { title, description, duration, code, date } = req.body;
+
+        if (!title || !description || !duration || !code || !date) {
+            return res.status(400).json({ message: 'All fields are required.' });
+        }
 
         const newActivity = await Activity.create({
+            title,
             description,
+            duration,
             code,
             date,
-            duration,
             ProfessorId: req.user.id,
         });
 
         res.status(201).json(newActivity);
     } catch (error) {
-        res.status(500).json({ message: 'Error creating activity', error });
+        res.status(500).json({ message: 'Error creating activity', error: error.message });
     }
 });
 
-// GET /activities - Get all activities (doar prof)
-router.get('/activities', authenticateToken, authorizeRole('professor'), async (req, res) => {
+// GET /professor - Get all activities for professor
+router.get('/professor', authorizeRole('professor'), async (req, res) => {
     try {
-        const activities = await Activity.findAll({ where: { ProfessorId: req.user.id } });
+        const activities = await Activity.findAll({
+            where: { ProfessorId: req.user.id },
+            order: [['createdAt', 'DESC']],
+        });
         res.status(200).json(activities);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching activities', error });
+        res.status(500).json({ message: 'Error fetching activities', error: error.message });
     }
 });
 
-// GET /activities - Get all available activities (pentru studenți)
-router.get('/activities', authenticateToken, authorizeRole('student'), async (req, res) => {
+// GET /code/:code - Get an activity by its code
+router.get('/code/:code', async (req, res) => {
     try {
-        const activities = await Activity.findAll();
-        res.status(200).json(activities);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching activities', error });
-    }
-});
-
-// DELETE /activities/:id - Delete an activity (doar prof)
-router.delete('/activities/:id', authenticateToken, authorizeRole('professor'), async (req, res) => {
-    try {
-        const activity = await Activity.findOne({ where: { id: req.params.id, ProfessorId: req.user.id } });
+        const { code } = req.params;
+        const activity = await Activity.findOne({ where: { code } });
 
         if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
-        }
-
-        await activity.destroy();
-        res.status(200).json({ message: 'Activity deleted successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error deleting activity', error });
-    }
-});
-
-// GET /activities/:id - Get activity details (doar student)
-router.get('/activities/:id', authenticateToken, authorizeRole('student'), async (req, res) => {
-    try {
-        const activity = await Activity.findOne({ where: { id: req.params.id } });
-
-        if (!activity) {
-            return res.status(404).json({ message: 'Activity not found' });
+            return res.status(404).json({ message: 'Activity not found.' });
         }
 
         res.status(200).json(activity);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching activity', error });
+        res.status(500).json({ message: 'Error fetching activity by code', error: error.message });
     }
 });
+
+// // POST /student - Add an activity to the student's list
+// router.post('/student', async (req, res) => {
+//     try {
+//         const { code } = req.body;
+
+//         if (!code) {
+//             return res.status(400).json({ message: 'Activity code is required.' });
+//         }
+
+//         const activity = await Activity.findOne({ where: { code } });
+
+//         if (!activity) {
+//             return res.status(404).json({ message: 'Activity not found.' });
+//         }
+
+//         // Assuming a many-to-many relationship between students and activities
+//         const student = await User.findByPk(req.user.id);
+//         await student.addActivity(activity); // Add the activity to the student's list
+
+//         res.status(200).json({ message: 'Activity added successfully.', activity });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Error adding activity', error: error.message });
+//     }
+// });
 
 module.exports = router;

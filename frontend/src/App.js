@@ -37,7 +37,7 @@ return (
             path="/dashboard"
             element={
             user ? (
-                user.role === 'STUDENT' ? (
+                user.role === 'student' ? (
                 <StudentDashboard />
                 ) : (
                 <ProfessorDashboard />

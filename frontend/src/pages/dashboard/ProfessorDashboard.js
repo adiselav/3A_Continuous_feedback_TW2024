@@ -2,152 +2,180 @@ import React, { useState, useEffect } from 'react';
 import axios from '../../utils/axios-config';
 
 const ProfessorDashboard = () => {
-const [activities, setActivities] = useState([]);
-const [newActivity, setNewActivity] = useState({
-    title: '',
-    description: '',
-    duration: 60
-});
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState('');
-
-useEffect(() => {
-    fetchActivities();
-}, []);
-
-const fetchActivities = async () => {
-    try {
-    const response = await axios.get('/activities');
-    setActivities(response.data);
-    setLoading(false);
-    } catch (err) {
-    setError('Eroare la încărcarea activităților');
-    setLoading(false);
-    }
-};
-
-const handleCreateActivity = async (e) => {
-    e.preventDefault();
-    try {
-    const response = await axios.post('/activities', newActivity);
-    setActivities([...activities, response.data]);
-    setNewActivity({
+    const [activities, setActivities] = useState([]);
+    const [error, setError] = useState('');
+    const [formData, setFormData] = useState({
         title: '',
         description: '',
-        duration: 60
+        duration: '',
+        code: '',
+        date: new Date().toISOString().split('T')[0],
     });
-    } catch (err) {
-    setError('Eroare la crearea activității');
-    }
-};
 
-const handleDeleteActivity = async (id) => {
-    try {
-    await axios.delete(`/activities/${id}`);
-    setActivities(activities.filter(activity => activity.id !== id));
-    } catch (err) {
-    setError('Eroare la ștergerea activității');
-    }
-};
+    const fetchActivities = async () => {
+        try {
+            const response = await axios.get('/activities/professor');
+            console.log('Fetched Activities:', response.data);
+            setActivities(response.data);
+        } catch (error) {
+            console.error('Error fetching activities:', error.response?.data || error.message);
+            setError('Failed to fetch activities. Please try again later.');
+        }
+    };
 
-if (loading) {
-    return <div className="text-center mt-8">Se încarcă...</div>;
-}
+    useEffect(() => {
+        fetchActivities();
+    }, []);
 
-return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 className="text-2xl font-semibold text-gray-900 mb-6">
-        Dashboard Profesor
-    </h1>
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        try {
+            const newActivityPayload = {
+                ...formData,
+                code: Math.random().toString(36).substr(2, 8),
+                date: new Date().toISOString(),
+            };
+            const response = await axios.post('/activities/professor', newActivityPayload);
+            console.log('Activity Created:', response.data);
+            setFormData({
+                title: '',
+                description: '',
+                duration: '',
+                code: '',
+                date: new Date().toISOString().split('T')[0],
+            });
+            fetchActivities();
+        } catch (error) {
+            console.error('Error creating activity:', error.response?.data || error.message);
+            setError('Failed to create activity. Please try again.');
+        }
+    };
 
-    {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        {error}
-        </div>
-    )}
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
 
-    <div className="bg-white shadow rounded-lg p-6 mb-8">
-        <h2 className="text-lg font-medium text-gray-900 mb-4">
-        Creare Activitate Nouă
-        </h2>
-        <form onSubmit={handleCreateActivity} className="space-y-4">
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Professor Dashboard</h1>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+
+      <div className="bg-gray-100 p-6 rounded-lg shadow-lg mb-8">
+        <h2 className="text-xl font-bold mb-4">Creare Activitate</h2>
+        <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 className="text-lg font-semibold text-gray-900 mb-4">Creează o nouă activitate</h2>
+    
+    <div className="grid grid-cols-1 gap-4">
         <div>
-            <label className="block text-sm font-medium text-gray-700">
+        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Titlu
-            </label>
-            <input
+        </label>
+        <input
             type="text"
+            name="title"
+            id="title"
+            value={formData.title}
+            onChange={handleChange}
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            value={newActivity.title}
-            onChange={(e) => setNewActivity({ ...newActivity, title: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         </div>
+
         <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
             Descriere
         </label>
         <textarea
+            name="description"
+            id="description"
+            value={formData.description}
+            onChange={handleChange}
             required
             rows={3}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            value={newActivity.description}
-            onChange={(e) => setNewActivity({ ...newActivity, description: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         </div>
+
         <div>
-        <label className="block text-sm font-medium text-gray-700">
-            Durată (minute)
+        <label htmlFor="code" className="block text-sm font-medium text-gray-700">
+            Code
         </label>
         <input
-            type="number"
+            type="text"
+            name="code"
+            id="code"
+            value={formData.code}
+            onChange={handleChange}
             required
-            min={15}
-            max={180}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            value={newActivity.duration}
-            onChange={(e) => setNewActivity({ ...newActivity, duration: parseInt(e.target.value) })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         </div>
+
+        <div className="grid grid-cols-2 gap-4">
         <div>
-        <button
-            type="submit"
-            className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-            Creează Activitate
-        </button>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+            Data
+            </label>
+            <input
+            type="date"
+            name="date"
+            id="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
         </div>
-    </form>
+
+        <div>
+            <label htmlFor="duration" className="block text-sm font-medium text-gray-700">
+            Durată (minute)
+            </label>
+            <input
+            type="number"
+            name="duration"
+            id="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            required
+            min="1"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+        </div>
+        </div>
     </div>
 
-    <div className="bg-white shadow rounded-lg p-6">
-    <h2 className="text-lg font-medium text-gray-900 mb-4">
-        Activitățile Mele
-    </h2>
-    <div className="space-y-4">
-        {activities.length === 0 ? (
-        <p className="text-gray-500">Nu există activități create încă.</p>
-        ) : (
-        activities.map((activity) => (
-            <div key={activity.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
-            <div>
-                <h3 className="text-sm font-medium text-gray-900">{activity.title}</h3>
-                <p className="text-sm text-gray-500 mt-1">{activity.description}</p>
-                <p className="text-sm text-gray-500 mt-1">Durată: {activity.duration} minute</p>
-            </div>
-            <button
-                onClick={() => handleDeleteActivity(activity.id)}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-                Șterge
-            </button>
-            </div>
-        ))
-        )}
+    <div className="mt-4">
+        <button
+        type="submit"
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+        Creează activitate
+        </button>
     </div>
-</div>
-</div>
-);
+    </form>
+      </div>
+
+    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {activities.map((activity) => (
+            <div key={activity.id} className="bg-white rounded-lg shadow-lg p-6">
+                <h2 className="text-xl font-bold mb-4">{activity.description}</h2>
+                <p className="text-gray-500">Durată: {activity.duration} minute</p>
+                <button
+                    onClick={() => console.log(`Vizualizare feedback pentru ${activity.id}`)}
+                    className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                >
+                    Vezi Feedback
+                </button>
+            </div>
+        ))}
+    </div>
+    </div>
+  );
 };
 
 export default ProfessorDashboard;

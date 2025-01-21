@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -8,10 +8,10 @@ const navigate = useNavigate();
 
 const handleLogout = async () => {
     try {
-    await logout();
-    navigate('/login');
+        await logout();
+        navigate('/auth/login');
     } catch (error) {
-    console.error('Error logging out:', error);
+        console.error('Error logging out:', error);
     }
 };
 
@@ -47,12 +47,27 @@ return (
         <div className="hidden sm:ml-6 sm:flex sm:items-center">
             <div className="ml-3 relative">
             <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-700">{user?.email}</span>
+                <div className="flex items-center">
+                    <div className="mr-2">
+                        <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-500">
+                            <span className="text-sm font-medium leading-none text-white">
+                                {user?.email.charAt(0).toUpperCase()}
+                            </span>
+                        </span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-700">{user?.email}</span>
+                        <span className="text-xs text-gray-500 capitalize">{user?.role}</span>
+                    </div>
+                </div>
                 <button
-                onClick={handleLogout}
-                className="bg-white px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    onClick={handleLogout}
+                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
-                Deconectare
+                    <svg className="mr-2 -ml-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Deconectare
                 </button>
             </div>
             </div>

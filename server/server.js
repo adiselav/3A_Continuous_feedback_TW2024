@@ -18,8 +18,8 @@ app.use(cors({
     exposedHeaders: ['Content-Range', 'X-Content-Range']
 }));
 app.use('/api/auth', authRoutes);
-app.use('/api/activity', activityRoutes);
-app.use('/api/feedback', feedbackRoutes);
+app.use('/api/activities', activityRoutes);
+app.use('/api/feedbacks', feedbackRoutes);
 
 app.get('/', (req, res) => {
     res.send('Serverul funcționează!');

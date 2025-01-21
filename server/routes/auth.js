@@ -16,41 +16,41 @@ router.post('/register', async (req, res) => {
     const { email, password, role } = req.body;
 
     if (!email || !password || !role) {
-        return res.status(400).json({ message: 'Toate câmpurile sunt obligatorii!' });
+        return res.status(400).json({ message: 'All fields are required.' });
     }
-
     const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ message: 'Adresa de email este invalidă!' });
+        return res.status(400).json({ message: 'Invalid email address.' });
     }
 
     if (password.length < 8) {
-        return res.status(400).json({ message: 'Parola trebuie să aibă cel puțin 8 caractere!' });
+        return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
     }
 
     if (!['professor', 'student'].includes(role)) {
-        return res.status(400).json({ message: 'Rol invalid!' });
+        return res.status(400).json({ message: 'Invalid role.' });
     }
 
     try {
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ message: 'Acest email este deja folosit!' });
+            return res.status(400).json({ message: 'Email is already in use.' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await User.create({ email, password: hashedPassword, role });
 
-        const newUser = await User.create({
-            email,
-            password: hashedPassword,
-            role,
+        const token = jwt.sign({ id: newUser.id, email: newUser.email, role: newUser.role }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
         });
 
-        const { id, email: userEmail, role: userRole } = newUser;
-        res.status(201).json({ message: 'Utilizator creat cu succes!', user: { id, userEmail, userRole } });
+        res.status(201).json({
+            user: { id: newUser.id, email: newUser.email, role: newUser.role },
+            token,
+        });
     } catch (error) {
-        console.error('Error during registration:', error.message);
-        res.status(500).json({ message: 'Eroare la crearea utilizatorului!' });
+        res.status(500).json({ message: 'Error creating account.', error: error.message });
     }
 });
 
