@@ -68,29 +68,4 @@ router.get('/code/:code', async (req, res) => {
     }
 });
 
-// // POST /student - Add an activity to the student's list
-// router.post('/student', async (req, res) => {
-//     try {
-//         const { code } = req.body;
-
-//         if (!code) {
-//             return res.status(400).json({ message: 'Activity code is required.' });
-//         }
-
-//         const activity = await Activity.findOne({ where: { code } });
-
-//         if (!activity) {
-//             return res.status(404).json({ message: 'Activity not found.' });
-//         }
-
-//         // Assuming a many-to-many relationship between students and activities
-//         const student = await User.findByPk(req.user.id);
-//         await student.addActivity(activity); // Add the activity to the student's list
-
-//         res.status(200).json({ message: 'Activity added successfully.', activity });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error adding activity', error: error.message });
-//     }
-// });
-
 module.exports = router;
