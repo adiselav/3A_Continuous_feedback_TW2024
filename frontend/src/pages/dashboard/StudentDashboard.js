@@ -1,24 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from '../../utils/axios-config';
 
 const StudentDashboard = () => {
     const [activities, setActivities] = useState([]);
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
-
-    const fetchActivities = async () => {
-        try {
-            const response = await axios.get('/activities/student');
-            setActivities(response.data);
-        } catch (error) {
-            console.error('Error fetching activities:', error.response?.data || error.message);
-            setError('Failed to fetch activities. Please try again later.');
-        }
-    };
-
-    useEffect(() => {
-        fetchActivities();
-    }, []);
 
     const addActivity = async () => {
         try {
@@ -48,24 +34,25 @@ const StudentDashboard = () => {
                         onChange={(e) => setCode(e.target.value)}
                         className="p-2 border rounded w-full"
                     />
-                    <button
-                        onClick={addActivity}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
+                    <button onClick={addActivity} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                         Add Activity
                     </button>
                 </div>
             </div>
 
-            <ul>
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                 {activities.map((activity) => (
-                    <li key={activity.id} className="mb-4">
-                        <h3 className="text-lg font-bold">{activity.title}</h3>
-                        <p>{activity.description}</p>
-                        <p><strong>Date:</strong> {new Date(activity.date).toLocaleDateString()}</p>
-                    </li>
-                ))}
-            </ul>
+                    <div key={activity.id} className="bg-white rounded-lg shadow-lg p-6">
+                        <h2 className="text-xl font-bold mb-4">{activity.title}</h2>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">{activity.description}</h3>
+                        <p className="text-gray-500">Durată: {activity.duration} minute</p>
+                        <button onClick={() => console.log(`Vizualizare feedback pentru ${activity.id}`)} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                            Vezi Feedback
+                        </button>
+                    </div>
+                    ))
+                }
+            </div>
         </div>
     );
 };
