@@ -3,7 +3,7 @@
 ## Ghid instalare proiect
 - **Pasul 1** Se ruleaza din folderul principal scriptul de install: `./install.sh`
 - **Pasul 2** Se ruleaza din folderul principal scriptul de start: `./start.sh`
-- **Pasul 3** Pentru fisierele .env, contact @aandreis20 sau @adiselav
+- **Pasul 3** Pentru fisierele .env, contact [@aandreis20](https://github.com/aandreis20) sau [@adiselav](https://github.com/adiselav)
 
 ---
 
