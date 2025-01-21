@@ -1,5 +1,9 @@
 # 3A_Continuous_feedback_TW2024 - Aplicație Web pentru Acordarea de Feedback
 
+## Ghid instalare proiect
+- **Pasul 1** Se ruleaza din folderul principal scriptul de install: `./install.sh`
+- **Pasul 2** Se ruleaza din folderul principal scriptul de start: `./start.sh`
+
 ## Descriere Generală
 
 **Feedback3A** este o aplicație web care permite acordarea de feedback continuu pentru cursuri sau seminarii. Platforma este gândită pentru a încuraja interacțiunea în timp real între studenți și profesori, oferind posibilitatea de a colecta și analiza reacțiile participanților pe parcursul unei activități.
@@ -36,16 +40,15 @@ Aplicația utilizează o arhitectură modernă de tip **Single Page Application 
 ## Tehnologii Utilizate
 
 ### Back-End:
-- **Spring Boot** pentru dezvoltarea rapidă a aplicației RESTful.
-- **Spring Data JPA** pentru gestionarea operațiilor cu baza de date folosind un ORM.
-- **Hibernate** ca implementare ORM pentru maparea obiect-relatională.
+- **Express.js** pentru dezvoltarea rapidă a aplicației RESTful.
+- **JsonWebToken** pentru tokenizare.
+- **Bcryptjs** pentru criptarea parolelor.
 - **Bază de date relațională:** SQLite.
-- **Spring Web** pentru crearea și expunerea endpoint-urilor REST.
 - **Tool-uri de testare:** Postman pentru testarea API-urilor.
 
 ### Front-End:
 - **React.js** pentru dezvoltarea interfeței SPA.
-- Framework CSS (Bootstrap, Tailwind, Material UI) pentru un design responsiv.
+- **Framework CSS** (Bootstrap, Tailwind, Material UI) pentru un design responsiv.
 
 ---
 
@@ -53,7 +56,7 @@ Aplicația utilizează o arhitectură modernă de tip **Single Page Application 
 
 1. **Back-End**:
    - Expune operații CRUD pentru entități:
-     - **Activități**: ID, descriere, cod unic, dată, durată.
+     - **Activități**: ID, title, descriere, cod unic, dată, durată.
      - **Feedback**: ID, tip feedback (smiley, frowny, surprised, confused), timestamp, asociat unei activități.
    - Gestiunea bazelor de date cu ajutorul unui ORM.
 
@@ -67,15 +70,16 @@ Aplicația utilizează o arhitectură modernă de tip **Single Page Application 
 
 ### Entități:
 - **Activitate**:
-  - Atribute: `id`, `descriere`, `cod_unic`, `data`, `durata`.
+  - Atribute: `id`, `titlu`, `descriere`, `cod_unic`, `data`, `durata`.
   - Relație: Un profesor poate avea mai multe activități.
 - **Feedback**:
   - Atribute: `id`, `tip_feedback`, `timestamp`, `activitate_id`.
   - Relație: Fiecare feedback este asociat unei activități.
 
 ### Operații REST:
-- `GET /activitati`: Listarea activităților.
-- `POST /activitati`: Crearea unei activități.
+- `GET /activities/professor`: Listarea activităților pentru un profesor.
+- `POST /activities/professor`: Crearea unei activități de catre un profesor.
+- `GET /activities/code/:code`: Listarea unei activitati de catre un elev.
 - `GET /feedback/:activitate_id`: Listarea feedback-urilor pentru o activitate.
 - `POST /feedback`: Adăugarea unui feedback.
 
