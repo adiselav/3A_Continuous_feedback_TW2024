@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from '../../utils/axios-config';
+import ActivityCard from '../../components/StudentActivityCard';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const StudentDashboard = () => {
     const [activities, setActivities] = useState([]);
@@ -18,8 +21,33 @@ const StudentDashboard = () => {
         }
     };
 
+    const handleVote = (activityId, reaction) => {
+        setActivities((prevActivities) =>
+            prevActivities.map((activity) =>
+                activity.id === activityId
+                    ? { ...activity, hasVoted: true }
+                    : activity
+            )
+        );
+        console.log(`Activity ID: ${activityId}, Reaction: ${reaction}`);
+        toast.dismiss();
+    };
+    
+    const handleFeedbackClick = (activity) => {
+        toast(
+            <ActivityCard
+                activity={activity}
+                onVote={handleVote}
+                hasVoted={activity.hasVoted}
+            />,
+            { autoClose: false }
+        );
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
+            <ToastContainer />
+
             <h1 className="text-3xl font-bold text-center mb-8">Student Dashboard</h1>
 
             {error && <p className="text-red-600 mb-4">{error}</p>}
@@ -46,8 +74,15 @@ const StudentDashboard = () => {
                         <h2 className="text-xl font-bold mb-4">{activity.title}</h2>
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">{activity.description}</h3>
                         <p className="text-gray-500">Durată: {activity.duration} minute</p>
-                        <button onClick={() => console.log(`Vizualizare feedback pentru ${activity.id}`)} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
-                            Vezi Feedback
+                        <button 
+                            onClick={() => handleFeedbackClick(activity)} 
+                            disabled={activity.hasVoted} 
+                            tabIndex={activity.hasVoted ? -1 : 0} 
+                            className={
+                                `mt-4 py-2 px-4 rounded-lg transition duration-150 ease-in-out ${activity.hasVoted? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 focus:ring focus:ring-blue-300'}`
+                            }
+                        >
+                            Acorda Feedback
                         </button>
                     </div>
                     ))

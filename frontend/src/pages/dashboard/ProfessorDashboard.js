@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../utils/axios-config';
+import ActivityCard from '../../components/ProfessorActivityCard';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProfessorDashboard = () => {
     const [activities, setActivities] = useState([]);
@@ -58,8 +61,26 @@ const ProfessorDashboard = () => {
         });
     };
 
+    const handleDelete = async (activityId) => {
+        try {
+            await axios.delete(`/activities/professor/${activityId}`);
+            console.log('Activity Deleted:', activityId);
+            toast.dismiss();
+            fetchActivities();
+        } catch (error) {
+            console.error('Error deleting activity:', error.response?.data || error.message);
+            setError('Failed to delete activities. Please try again later.');
+        }
+    }
+
+    const handleFeedbackClick = (activity) => {
+        toast(<ActivityCard activity={activity} onDelete={handleDelete}/>);
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
+            <ToastContainer />
+
             <h1 className="text-3xl font-bold text-center mb-8">Professor Dashboard</h1>
             {error && <p className="text-red-600 mb-4">{error}</p>}
 
@@ -148,7 +169,7 @@ const ProfessorDashboard = () => {
                     </div>
 
                     <div className="mt-4">
-                        <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button type="submit" onClick={() => handleSubmit} className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Creează activitate
                         </button>
                     </div>
@@ -161,7 +182,7 @@ const ProfessorDashboard = () => {
                         <h2 className="text-xl font-bold mb-4">{activity.title}</h2>
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">{activity.description}</h3>
                         <p className="text-gray-500">Durată: {activity.duration} minute</p>
-                        <button onClick={() => console.log(`Vizualizare feedback pentru ${activity.id}`)} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
+                        <button onClick={() => handleFeedbackClick(activity)} className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600">
                             Vezi Feedback
                         </button>
                     </div>

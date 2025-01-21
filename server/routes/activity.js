@@ -68,4 +68,21 @@ router.get('/code/:code', async (req, res) => {
     }
 });
 
+// DELETE /professor/:id - Delete an activity
+router.delete('/professor/:id', authorizeRole('professor'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const activity = await Activity.findOne({ where: { id } });
+
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found.' });
+        }
+
+        await activity.destroy();
+        res.status(204).end();
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting activity', error: error.message });
+    }
+});
+
 module.exports = router;
