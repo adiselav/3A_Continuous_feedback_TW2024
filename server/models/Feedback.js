@@ -12,10 +12,6 @@ const Feedback = sequelize.define('Feedback', {
         type: DataTypes.ENUM('smiley', 'frowny', 'surprised', 'confused'),
         allowNull: false,
     },
-    timestamp: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-    },
 });
 
 Feedback.belongsTo(Activity, { foreignKey: 'ActivityId' });

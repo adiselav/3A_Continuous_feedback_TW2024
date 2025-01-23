@@ -3,6 +3,9 @@ const User = require('./User');
 const Activity = require('./Activity');
 const Feedback = require('./Feedback');
 
+Activity.hasMany(Feedback, { foreignKey: 'ActivityId' });
+Feedback.belongsTo(Activity, { foreignKey: 'ActivityId' });
+
 const syncModels = async () => {
     await sequelize.sync({ alter: true });
     console.log('Tabelele au fost sincronizate!');

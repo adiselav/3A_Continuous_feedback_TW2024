@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from '../utils/axios-config';
 import {
     FaceSmileIcon,
     FaceFrownIcon,
@@ -8,8 +9,30 @@ import {
 } from '@heroicons/react/24/outline';
 
 const ActivityCard = ({ activity, onDelete }) => {
-  const { id, title, description, code, date, duration, feedbacks = [] } = activity;
+  const { id, title, description, code, date, duration } = activity;
+  const [feedbacks, setFeedbacks] = useState([]);
 
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await axios.get('/feedback', {
+          params: { activityId: id },
+        });
+  
+        if (response.status === 200) {
+          setFeedbacks(response.data);
+        } else {
+          console.error('Failed to fetch feedbacks:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching feedbacks:', error.response?.data || error.message);
+      }
+    };
+  
+    fetchFeedbacks();
+  }, [id]);
+
+  
   const feedbackCounts = feedbacks.reduce(
     (counts, feedback) => {
       counts[feedback.reaction] = (counts[feedback.reaction] || 0) + 1;

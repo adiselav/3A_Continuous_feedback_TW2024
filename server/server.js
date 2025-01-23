@@ -19,7 +19,7 @@ app.use(cors({
 }));
 app.use('/api/auth', authRoutes);
 app.use('/api/activities', activityRoutes);
-app.use('/api/feedbacks', feedbackRoutes);
+app.use('/api', feedbackRoutes);
 
 app.get('/', (req, res) => {
     res.send('Serverul funcționează!');

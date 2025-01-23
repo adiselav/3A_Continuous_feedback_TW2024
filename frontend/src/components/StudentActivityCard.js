@@ -1,4 +1,5 @@
-import React, {} from 'react';
+import React, { useState } from 'react';
+import axios from '../utils/axios-config';
 import {
   FaceSmileIcon,
   FaceFrownIcon,
@@ -8,13 +9,32 @@ import {
 
 const StudentActivityCard = ({ activity, onVote, hasVoted }) => {
     const { id, title, description, code, date, duration } = activity;
-  
-    const handleVote = (reaction) => {
+    const [formReaction, setFormReaction] = useState({
+        reaction: '',
+        activityId: id,
+    });
+
+    const handleVote = async (reaction) => {
       if (!hasVoted) {
-        onVote(id, reaction);
+        setFormReaction({ ...formReaction, reaction });
+    
+        try {
+          const response = await axios.post('/feedback', {
+            reaction,
+            activityId: parseInt(id, 10),
+          });
+    
+          if (response.status === 201) {
+            onVote(id, reaction);
+          } else {
+            console.error('Failed to submit feedback:', response.data.message);
+          }
+        } catch (error) {
+          console.error('Error submitting feedback:', error.response?.data || error.message);
+        }
       }
     };
-  
+
     const ReactionButton = ({ icon: Icon, reaction }) => (
       <button
         onClick={() => handleVote(reaction)}
@@ -27,7 +47,7 @@ const StudentActivityCard = ({ activity, onVote, hasVoted }) => {
         <span className="text-sm font-medium text-gray-800 capitalize">{reaction}</span>
       </button>
     );
-  
+
     return (
       <div className="bg-white shadow rounded-lg p-6 mb-4">
         <div className="flex justify-between items-start">
@@ -55,5 +75,5 @@ const StudentActivityCard = ({ activity, onVote, hasVoted }) => {
       </div>
     );
   };
-  
-  export default StudentActivityCard;
+
+export default StudentActivityCard;
